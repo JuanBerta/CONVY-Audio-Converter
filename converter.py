@@ -2,34 +2,29 @@ from pydub import AudioSegment
 import os
 
 
-def convert_audio(input_paths, output_format, output_dir, progress_callback=None):
-    """
-    Convert a list of audio files to the specified format.
-    :param input_paths: List of input file paths.
-    :param output_format: Format to convert the files to.
-    :param output_dir: Directory where the converted files will be saved.
-    :param progress_callback: Optional callback function for progress bar.
-    """
-    try:
-        for i, input_path in enumerate(input_paths):
-            input_path = input_path.strip("'\"")
-            audio = AudioSegment.from_file(input_path)
+def convert_audio(
+    input_files, output_format, output_dir, quality=192, progress_callback=None
+):
+    for index, file_path in enumerate(input_files):
+        try:
+            audio = AudioSegment.from_file(file_path)
+            output_file = os.path.join(
+                output_dir,
+                os.path.splitext(os.path.basename(file_path))[0] + f".{output_format}",
+            )
 
-            base = os.path.splitext(os.path.basename(input_path))[0]
-            output_path = os.path.join(output_dir, f"{base}.{output_format}")
+            # Set bitrate based on quality argument, applicable for certain formats
+            bitrate = f"{quality}k" if output_format in ["mp3", "ogg", "aac"] else None
 
-            # Handle AAC output format using libvo_aacenc codec
-            if output_format == "aac":
-                audio.export(output_path, format="adts", codec="libvo_aacenc")
-            else:
-                audio.export(output_path, format=output_format)
+            audio.export(output_file, format=output_format, bitrate=bitrate)
 
             if progress_callback:
-                progress_callback(i + 1, len(input_paths))
+                progress_callback(index + 1, len(input_files))
 
-        return True, "Files converted successfully!"
-    except Exception as e:
-        return False, f"Failed to convert: {str(e)}"
+        except Exception as e:
+            return False, str(e)
+
+    return True, "All files converted successfully."
 
 
 from pydub import AudioSegment
