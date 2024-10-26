@@ -11,6 +11,7 @@
 - **Success Notification**: Receive notifications upon completion, with an option to open the output folder immediately.
 - **Responsive GUI**: Built with Tkinter and ttkbootstrap for a modern and clean interface.
 - **Custom Icon**: Features a custom icon for the application window.
+- **Command Line Interface (CLI)**: Provides a CLI option for advanced users.
 
 ## Requirements
 To run CONVY-Audio-Converter, you need the following:
