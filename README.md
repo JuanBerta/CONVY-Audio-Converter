@@ -54,6 +54,12 @@ python gui.py
 4- Click Convert and watch the progress bar as your files are converted.
 
 ## Screenshots
+![screenshot program](https://github.com/user-attachments/assets/d9b30b30-d0b4-40b9-b9db-37b656e02520)
+![screenshot program video selected](https://github.com/user-attachments/assets/17c1d52c-628d-4aa4-9fdc-cc85db83910c)
+
+![Screenshot Successful conversion](https://github.com/user-attachments/assets/af90e16d-ea5e-47a9-bc71-c69944a30c3e)
+
+![Screenshot Open Folder](https://github.com/user-attachments/assets/f65da6df-4d69-4ec7-8ebb-ff41611ce7d5)
 
 
 # Disclaimer:
