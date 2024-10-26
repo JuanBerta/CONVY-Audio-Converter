@@ -1,33 +1,78 @@
 from pydub import AudioSegment
+import subprocess
 import os
 
 
 def convert_audio(
-    input_files, output_format, output_dir, quality=192, progress_callback=None
+    input_paths,
+    output_format,
+    output_dir,
+    bitrate=None,
+    sample_rate=None,
+    channels=None,
+    progress_callback=None,
 ):
-    for index, file_path in enumerate(input_files):
-        try:
-            audio = AudioSegment.from_file(file_path)
-            output_file = os.path.join(
-                output_dir,
-                os.path.splitext(os.path.basename(file_path))[0] + f".{output_format}",
-            )
+    # Set default sample rate if none is specified, typically 44100 Hz for most formats
+    sample_rate = sample_rate if sample_rate is not None else 44100
 
-            # Set bitrate based on quality argument, applicable for certain formats
-            bitrate = f"{quality}k" if output_format in ["mp3", "ogg", "aac"] else None
+    total = len(input_paths)
+    for current, input_path in enumerate(input_paths, start=1):
+        # Check if the input path is valid
+        if not input_path or not os.path.isfile(input_path):
+            return False, f"Input file does not exist or is invalid: {input_path}"
 
-            audio.export(output_file, format=output_format, bitrate=bitrate)
+        # Determine output path
+        output_path = os.path.join(
+            output_dir,
+            os.path.splitext(os.path.basename(input_path))[0] + f".{output_format}",
+        )
 
-            if progress_callback:
-                progress_callback(index + 1, len(input_files))
+        # Construct the FFmpeg command
+        ffmpeg_command = [
+            "ffmpeg",
+            "-i",
+            input_path,
+            "-b:a",
+            f"{bitrate}" if bitrate else None,
+            "-ar",
+            str(sample_rate) if sample_rate else None,
+            "-ac",
+            str(channels) if channels else None,
+            output_path,
+        ]
 
-        except Exception as e:
-            return False, str(e)
+        # Filter out None values from the command
+        ffmpeg_command = [arg for arg in ffmpeg_command if arg is not None]
 
-    return True, "All files converted successfully."
+        # Run the FFmpeg command
+        result = run_ffmpeg(ffmpeg_command)
+
+        if not result:  # Handle any errors returned from run_ffmpeg
+            return False, "Error occurred during conversion."
+
+        if progress_callback:
+            progress_callback(current, total)
+
+    return True, "Conversion successful"
 
 
-from pydub import AudioSegment
+def run_ffmpeg(command):
+    try:
+        # Run the command without opening a console window and capture output
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            creationflags=subprocess.CREATE_NO_WINDOW,
+        )
+        if result.returncode != 0:
+            print(f"Error: {result.stderr.decode()}")
+            return False  # Indicate failure
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False  # Indicate failure
+
+    return True  # Indicate success
 
 
 def get_audio_metadata(file_path):

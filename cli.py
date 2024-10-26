@@ -39,7 +39,16 @@ def parse_args():
 
 
 def main():
-    args = parse_args()
+    parser = argparse.ArgumentParser(description="Audio Converter CLI")
+    parser.add_argument("files", nargs="+", help="Input audio files")
+    parser.add_argument("-f", "--format", required=True, help="Output format")
+    parser.add_argument("-o", "--output", required=True, help="Output directory")
+    parser.add_argument("--bitrate", type=int, default=192, help="Audio bitrate")
+    parser.add_argument("--sample-rate", type=int, default=44100, help="Sample rate")
+    parser.add_argument(
+        "--channels", type=int, default=2, help="Number of audio channels"
+    )
+    args = parser.parse_args()
     input_paths = [Path(file).resolve() for file in args.input_files]
     output_dir = Path(args.output_dir).resolve()
 
