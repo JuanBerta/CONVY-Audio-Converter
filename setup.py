@@ -6,6 +6,7 @@ import subprocess
 dependencies = [
     "pydub",
     "ttkbootstrap",
+    "mutagen",
 ]
 
 
