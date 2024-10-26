@@ -30,3 +30,14 @@ def convert_audio(input_paths, output_format, output_dir, progress_callback=None
         return True, "Files converted successfully!"
     except Exception as e:
         return False, f"Failed to convert: {str(e)}"
+
+
+from pydub import AudioSegment
+
+
+def get_audio_metadata(file_path):
+    audio = AudioSegment.from_file(file_path)
+    duration = round(len(audio) / 1000, 2)  # in seconds
+    channels = audio.channels
+    sample_rate = audio.frame_rate
+    return {"duration": duration, "channels": channels, "sample_rate": sample_rate}
